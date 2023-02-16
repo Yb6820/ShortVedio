@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/goccy/go-json"
 )
 
 type UserInfo struct {
@@ -41,8 +40,8 @@ func GetUserInfo(c *gin.Context) {
 			StatusMsg:  &str,
 			User:       &user,
 		}
-		message, _ := json.Marshal(userinfo)
-		c.JSON(200, string(message))
+		c.JSON(200, userinfo)
+		return
 	}
 	str := "获取用户信息成功"
 	userinfo := UserInfo{
@@ -50,6 +49,5 @@ func GetUserInfo(c *gin.Context) {
 		StatusMsg:  &str,
 		User:       &user,
 	}
-	message, _ := json.Marshal(userinfo)
-	c.JSON(200, string(message))
+	c.JSON(200, userinfo)
 }
