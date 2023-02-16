@@ -11,8 +11,8 @@ import (
 
 func ToRegister(c *gin.Context) {
 	user := models.UserBasic{}
-	user.Name = c.PostForm("username")
-	password := c.PostForm("password")
+	user.Name = c.Query("username")
+	password := c.Query("password")
 
 	//获取一个生成密码的随机数
 	salt := fmt.Sprintf("%06d", rand.Int31())
@@ -49,8 +49,8 @@ func ToRegister(c *gin.Context) {
 func Login(c *gin.Context) {
 	/* name := c.Query("name")
 	password := c.Query("password") */
-	username := c.Request.FormValue("username")
-	password := c.Request.FormValue("password")
+	username := c.Query("username")
+	password := c.Query("password")
 	user := models.FindUserByName(username)
 	if user.Name == "" {
 		c.JSON(200, gin.H{
@@ -80,6 +80,6 @@ func Login(c *gin.Context) {
 		"status_code": 0,
 		"status_msg":  "登陆成功",
 		"user_id":     data.ID,
-		"token":       "string",
+		"token":       data.Token,
 	})
 }

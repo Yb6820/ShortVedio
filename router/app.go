@@ -13,7 +13,8 @@ func Router() *gin.Engine {
 	r.GET("/douyin/feed", service.Getfeed)
 
 	//用户登录和注册模块
-	r.POST("/douyin/user/register", service.ToRegister)
-	r.POST("/douyin/user/login", service.Login)
+	r.POST("/douyin/user/register/", service.ToRegister)
+	r.POST("/douyin/user/login/", service.Login)
+	r.GET("/douyin/user/", service.GetUserInfo)
 	return r
 }

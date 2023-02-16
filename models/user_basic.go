@@ -32,13 +32,19 @@ func CreateUser(user UserBasic) *gorm.DB {
 	return utils.DB.Create(&user)
 }
 
+func FindUserByID(Id uint) UserBasic {
+	user := UserBasic{}
+	utils.DB.Where("id = ?", Id).First(&user)
+	return user
+}
+
 // 登录校验
 func FindUserByNameAndPwd(name string, password string) UserBasic {
 	user := UserBasic{}
-	utils.DB.Where("name = ? and pass_word = ?", name, password).First(&user)
+	utils.DB.Where("name = ? and password = ?", name, password).First(&user)
 	//token加密
 	str := fmt.Sprintf("%d", time.Now().Unix())
 	temp := utils.MD5Encode(str)
-	utils.DB.Model(&user).Where("id = ?", user.ID).Update("Identity", temp)
+	utils.DB.Model(&user).Where("id = ?", user.ID).Update("token", temp)
 	return user
 }
