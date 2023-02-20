@@ -1,6 +1,12 @@
 package service
 
-import "github.com/gin-gonic/gin"
+import (
+	"DouYin/models"
+	"fmt"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
 
 type PublishList struct {
 	StatusCode int64   `json:"status_code"` // 状态码，0-成功，其他值-失败
@@ -26,30 +32,55 @@ example:
 token    query   string  是      用户鉴权token
 user_id  query   string  是      用户id
 
-
-{
-    "status_code": 0,
-    "status_msg": "string",
-    "video_list": [
-        {
-            "id": 0,
-            "author": {
-                "id": 0,
-                "name": "string",
-                "follow_count": 0,
-                "follower_count": 0,
-                "is_follow": true
-            },
-            "play_url": "string",
-            "cover_url": "string",
-            "favorite_count": 0,
-            "comment_count": 0,
-            "is_favorite": true,
-            "title": "string"
-        }
-    ]
-}
+	{
+	    "status_code": 0,
+	    "status_msg": "string",
+	    "video_list": [
+	        {
+	            "id": 0,
+	            "author": {
+	                "id": 0,
+	                "name": "string",
+	                "follow_count": 0,
+	                "follower_count": 0,
+	                "is_follow": true
+	            },
+	            "play_url": "string",
+	            "cover_url": "string",
+	            "favorite_count": 0,
+	            "comment_count": 0,
+	            "is_favorite": true,
+	            "title": "string"
+	        }
+	    ]
+	}
 */
 func GetPublishList(c *gin.Context) {
-
+	user_id, _ := strconv.Atoi(c.Query("user_id"))
+	token := c.Query("token")
+	usersql := models.FindUserByID(uint(user_id))
+	if token != usersql.Token {
+		fmt.Println("登录信息失效!")
+	}
+	//获取用户所有发布的视频
+	publishvideo := models.GetVideosByAuthorId(uint(user_id))
+	videos := make([]Video, len(publishvideo))
+	for k, v := range publishvideo {
+		//获取视频转换为json格式
+		videos[k].ID = int64(v.ID)
+		videos[k].Author = GetUserInfoById(uint(user_id), v.AuthorId)
+		videos[k].CommentCount = v.CommentCount
+		videos[k].PlayURL = v.PlayURL
+		videos[k].CoverURL = v.CoverURL
+		videos[k].FavoriteCount = v.FavoriteCount
+		videos[k].Title = v.Title
+		videos[k].IsFavorite = models.IsFollowOrNot(uint(user_id), uint(user_id))
+	}
+	str := "获取已发布的视频成功!"
+	favoritelist := FavoriteList{
+		StatusCode: "0",
+		StatusMsg:  &str,
+		VideoList:  videos,
+	}
+	c.JSON(200, favoritelist)
 }
