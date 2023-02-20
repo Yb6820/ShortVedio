@@ -34,3 +34,17 @@ func IsFollowOrNot(userid uint, authorid uint) bool {
 	utils.DB.Where("user_id = ? and author_id = ?", userid, authorid).First(follow)
 	return follow.IsFollow
 }
+
+// 获取某个用户关注的所有作者
+func GetFollows(userid uint) []Follow {
+	data := make([]Follow, 10)
+	utils.DB.Find(&data, "user_id = ? and is_follow = true", userid)
+	return data
+}
+
+// 获取某个用户的所有关注者
+func GetFollowers(authorid uint) []Follow {
+	data := make([]Follow, 10)
+	utils.DB.Find(&data, "author_id = ? and is_follow = true", authorid)
+	return data
+}
