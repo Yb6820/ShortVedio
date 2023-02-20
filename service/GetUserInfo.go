@@ -22,17 +22,24 @@ type User struct {
 	Name          string `json:"name"`           // 用户名称
 }
 
-func GetUserInfo(c *gin.Context) {
-	user_id, _ := strconv.Atoi(c.Query("user_id"))
-	token := c.Query("token")
-	usersql := models.FindUserByID(uint(user_id))
+// 根据用户ID返回json格式的User数据
+func GetUserInfoById(userid uint, authorid uint) User {
+	usersql := models.FindUserByID(uint(userid))
 	user := User{
 		ID:            int64(usersql.ID),
 		FollowCount:   int64(usersql.Follow),
 		FollowerCount: int64(usersql.Follower),
-		IsFollow:      true, //待后续修改
+		IsFollow:      models.IsFollowOrNot(userid, authorid), //待后续修改
 		Name:          usersql.Name,
 	}
+	return user
+}
+
+func GetUserInfo(c *gin.Context) {
+	user_id, _ := strconv.Atoi(c.Query("user_id"))
+	token := c.Query("token")
+	usersql := models.FindUserByID(uint(user_id))
+	user := GetUserInfoById(uint(user_id), uint(user_id))
 	if token != usersql.Token {
 		str := "登录信息失效！"
 		userinfo := UserInfo{

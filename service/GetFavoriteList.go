@@ -1,6 +1,12 @@
 package service
 
-import "github.com/gin-gonic/gin"
+import (
+	"DouYin/models"
+	"fmt"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
 
 type FavoriteList struct {
 	StatusCode string  `json:"status_code"` // 状态码，0-成功，其他值-失败
@@ -40,5 +46,32 @@ token     query  string  是      用户鉴权token
 */
 
 func GetFavoriteList(c *gin.Context) {
-
+	user_id, _ := strconv.Atoi(c.Query("user_id"))
+	token := c.Query("token")
+	usersql := models.FindUserByID(uint(user_id))
+	if token != usersql.Token {
+		fmt.Println("登录信息失效!")
+	}
+	//获取用户所有点赞的视频
+	favoritevideo := models.GetFavoriteListByUserId(uint(user_id))
+	videos := make([]Video, len(favoritevideo))
+	for k, v := range favoritevideo {
+		//获取视频转换为json格式
+		video := models.GetVideoById(v.VideoId)
+		videos[k].ID = int64(video.ID)
+		videos[k].Author = GetUserInfoById(uint(user_id), video.AuthorId)
+		videos[k].CommentCount = video.CommentCount
+		videos[k].PlayURL = video.PlayURL
+		videos[k].CoverURL = video.CoverURL
+		videos[k].FavoriteCount = video.FavoriteCount
+		videos[k].Title = video.Title
+		videos[k].IsFavorite = true
+	}
+	str := "获取已点赞的视频成功"
+	favoritelist := FavoriteList{
+		StatusCode: "0",
+		StatusMsg:  &str,
+		VideoList:  videos,
+	}
+	c.JSON(200, favoritelist)
 }
