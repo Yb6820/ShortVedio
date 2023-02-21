@@ -1,6 +1,12 @@
 package service
 
-import "github.com/gin-gonic/gin"
+import (
+	"DouYin/models"
+	"fmt"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
 
 type CommentList struct {
 	CommentList []Comment `json:"comment_list"` // 评论列表
@@ -22,26 +28,44 @@ example:
 token     query   string  是      用户鉴权token
 video_id  query   string  是      视频id
 
-
-{
-    "status_code": 0,
-    "status_msg": "string",
-    "comment_list": [
-        {
-            "id": 0,
-            "user": {
-                "id": 0,
-                "name": "string",
-                "follow_count": 0,
-                "follower_count": 0,
-                "is_follow": true
-            },
-            "content": "string",
-            "create_date": "string"
-        }
-    ]
-}
+	{
+	    "status_code": 0,
+	    "status_msg": "string",
+	    "comment_list": [
+	        {
+	            "id": 0,
+	            "user": {
+	                "id": 0,
+	                "name": "string",
+	                "follow_count": 0,
+	                "follower_count": 0,
+	                "is_follow": true
+	            },
+	            "content": "string",
+	            "create_date": "string"
+	        }
+	    ]
+	}
 */
 func GetCommentList(c *gin.Context) {
-
+	video_id, _ := strconv.Atoi(c.Query("video_id"))
+	token := c.Query("token")
+	fmt.Println(token)
+	//获取视频底下的所有评论
+	comments := models.GetCommentByVideoId(uint(video_id))
+	commentlist := make([]Comment, 10)
+	for k, v := range comments {
+		user := GetUserInfoById(v.UserId, models.GetVideoById(v.VideoId).ID)
+		commentlist[k].ID = int64(v.ID)
+		commentlist[k].User = user
+		commentlist[k].Content = v.Content
+		commentlist[k].CreateDate = v.CreatedAt.String()
+	}
+	str := "获取所有评论成功"
+	res := CommentList{
+		StatusCode:  0,
+		StatusMsg:   &str,
+		CommentList: commentlist,
+	}
+	c.JSON(200, res)
 }
