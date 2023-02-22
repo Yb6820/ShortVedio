@@ -50,7 +50,10 @@ video_id  query   string  是      视频id
 func GetCommentList(c *gin.Context) {
 	video_id, _ := strconv.Atoi(c.Query("video_id"))
 	token := c.Query("token")
-	fmt.Println(token)
+	if token != Userbasic.Token {
+		fmt.Println("登录信息失效!")
+		return
+	}
 	//获取视频底下的所有评论
 	comments := models.GetCommentByVideoId(uint(video_id))
 	commentlist := make([]Comment, 10)

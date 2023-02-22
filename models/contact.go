@@ -20,6 +20,9 @@ func (table *Contact) TableName() string {
 	return "contact"
 }
 
+func CreateContact(contact Contact) *gorm.DB {
+	return utils.DB.Create(&contact)
+}
 func SearchFriends(userId uint) []uint {
 	contacts := make([]Contact, 0)
 	objIds := make([]uint, 0)

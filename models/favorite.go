@@ -41,3 +41,10 @@ func IsFavoriteOrNot(userid uint, videoid uint) bool {
 	utils.DB.Where("user_id = ? and video_id = ?", userid, videoid).First(favorite)
 	return favorite.IsFavorite
 }
+
+// 确认点赞信息是否已经入库
+func GetFavoriteById(videoid uint, userid uint) Favorite {
+	favorite := Favorite{}
+	utils.DB.Where("video_id = ? and user_id = ?", videoid, userid).First(favorite)
+	return favorite
+}

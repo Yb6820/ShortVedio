@@ -2,6 +2,8 @@ package main
 
 import (
 	"DouYin/models"
+	"fmt"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -24,8 +26,15 @@ func main() {
 	//db.AutoMigrate(&models.Contact{})
 
 	//生成group_basic表
-	db.AutoMigrate(&models.Contact{})
-
+	//db.AutoMigrate(&models.Follow{})
+	x := "2023-02-16 12:48:42.800"
+	t, _ := time.Parse("2006-01-02 15:04:05", x)
+	fmt.Println(t.Unix())
+	user := make([]models.UserBasic, 10)
+	tm := time.Now()
+	tm.Format("2006-01-02 15:04:05")
+	db.Find(&user, "created_at < ?", tm)
+	fmt.Println(user)
 	/* // Create
 	user := &models.UserBasic{}
 	user.Name = "张三"

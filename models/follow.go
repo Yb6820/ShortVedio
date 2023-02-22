@@ -7,8 +7,8 @@ import (
 )
 
 type Follow struct {
-	UserId   uint
-	AuthorId uint
+	UserId   uint `gorm:"primaryKey"`
+	AuthorId uint `gorm:"primaryKey"`
 	IsFollow bool
 }
 
@@ -26,6 +26,16 @@ func UpdateFollow(follow Follow) *gorm.DB {
 	followsql := Follow{}
 	utils.DB.Where("user_id = ? and author_id = ?", follow.UserId, follow.AuthorId).First(&followsql)
 	return utils.DB.Where("user_id = ? and author_id = ?", follow.UserId, follow.AuthorId).Updates(Favorite{IsFavorite: !followsql.IsFollow})
+}
+
+func IsInFollowTable(userid uint, authorid uint) bool {
+	res := Follow{}
+	utils.DB.Where("user_id = ? and author_id = ?", userid, authorid).First(&res)
+	if res.UserId == 0 {
+		return false
+	} else {
+		return true
+	}
 }
 
 // 获取用户与作者之间的关注信息

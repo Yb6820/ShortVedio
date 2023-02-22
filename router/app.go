@@ -10,7 +10,7 @@ func Router() *gin.Engine {
 	r := gin.Default()
 
 	//视频流接口
-	r.GET("/douyin/feed", service.Getfeed)
+	r.GET("/douyin/feed/", service.Getfeed)
 
 	//投稿接口
 	r.POST("/douyin/publish/action/", service.PublishVideo)
