@@ -47,23 +47,21 @@ func GetVideosBeforeTime(time string) []Video {
 }
 
 // 实现点赞操作计数
-func UpdateFavoriteCount(favorite_count int64, flag bool) *gorm.DB {
+func UpdateFavoriteCount(video Video, flag bool) *gorm.DB {
 	if flag {
-		favorite_count += 1
+		video.FavoriteCount += 1
 	} else {
-		favorite_count -= 1
+		video.FavoriteCount -= 1
 	}
-	video := Video{}
-	return utils.DB.Model(&video).Update("favorite_count", favorite_count)
+	return utils.DB.Model(&video).Update("favorite_count", video.FavoriteCount)
 }
 
 // 实现评论操作计数
-func UpdateCommentCount(comment_count int64, flag bool) *gorm.DB {
+func UpdateCommentCount(video Video, flag bool) *gorm.DB {
 	if flag {
-		comment_count += 1
+		video.CommentCount += 1
 	} else {
-		comment_count -= 1
+		video.CommentCount -= 1
 	}
-	video := Video{}
-	return utils.DB.Model(&video).Update("comment_count", comment_count)
+	return utils.DB.Model(&video).Update("comment_count", video.CommentCount)
 }

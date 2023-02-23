@@ -48,6 +48,7 @@ type FeedList struct {
 func Getfeed(c *gin.Context) {
 	token := c.Query("token")
 	latest_time, _ := strconv.ParseInt(c.Query("latest_time"), 10, 64)
+	latest_time = latest_time - 1000000000
 	//登录信息检验
 	if token != Userbasic.Token {
 		str := "登录信息失效"
@@ -142,13 +143,13 @@ func ActFavorite(c *gin.Context) {
 		favorite.IsFavorite = true
 		models.CreateFavorite(favorite)
 		//更新点赞数
-		models.UpdateFavoriteCount(video.FavoriteCount, true)
+		models.UpdateFavoriteCount(video, true)
 		c.JSON(200, gin.H{
 			"status_code": 0,
 			"status_msg":  "点赞操作成功",
 		})
 	} else if action_type == 1 {
-		models.UpdateFavoriteCount(video.FavoriteCount, true)
+		models.UpdateFavoriteCount(video, true)
 		favorite := models.Favorite{
 			VideoId: uint(video_id),
 			UserId:  Userbasic.ID,
@@ -159,7 +160,7 @@ func ActFavorite(c *gin.Context) {
 			"status_msg":  "点赞操作成功",
 		})
 	} else {
-		models.UpdateFavoriteCount(video.FavoriteCount, false)
+		models.UpdateFavoriteCount(video, false)
 		favorite := models.Favorite{
 			VideoId: uint(video_id),
 			UserId:  Userbasic.ID,
@@ -240,7 +241,7 @@ func ActComment(c *gin.Context) {
 		}
 		//创建新的评论信息
 		models.CreateComment(comment)
-		models.UpdateCommentCount(video.CommentCount, true)
+		models.UpdateCommentCount(video, true)
 		com.CreateDate = comment.CreatedAt.String()
 		str := "评论成功!"
 		rep := SendComment{
@@ -261,7 +262,7 @@ func ActComment(c *gin.Context) {
 			return
 		}
 		str := "删除评论成功!"
-		models.UpdateCommentCount(video.CommentCount, false)
+		models.UpdateCommentCount(video, false)
 		rep := SendComment{
 			StatusCode: 0,
 			StatusMsg:  &str,
