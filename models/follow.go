@@ -41,7 +41,7 @@ func IsInFollowTable(userid uint, authorid uint) bool {
 // 获取用户与作者之间的关注信息
 func IsFollowOrNot(userid uint, authorid uint) bool {
 	follow := Follow{}
-	utils.DB.Where("user_id = ? and author_id = ?", userid, authorid).First(follow)
+	utils.DB.Where("user_id = ? and author_id = ?", userid, authorid).First(&follow)
 	return follow.IsFollow
 }
 

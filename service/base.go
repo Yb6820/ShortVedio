@@ -48,7 +48,7 @@ type FeedList struct {
 func Getfeed(c *gin.Context) {
 	token := c.Query("token")
 	latest_time, _ := strconv.ParseInt(c.Query("latest_time"), 10, 64)
-	latest_time = latest_time - 1000000000
+	latest_time = latest_time - 100000000
 	//登录信息检验
 	if token != Userbasic.Token {
 		str := "登录信息失效"
@@ -63,22 +63,29 @@ func Getfeed(c *gin.Context) {
 	tm := time.UnixMilli(latest_time).Format("2006-01-02 15:04:05.000")
 	videos := models.GetVideosBeforeTime(tm)
 	video_list := make([]Video, len(videos))
-	//下次传视频的最次时间nt
+	//下次传视频的最迟时间nt
 	var nt int64
 	for k, v := range videos {
 		//更新nt
 		if v.CreatedAt.Unix() > nt {
 			nt = v.CreatedAt.Unix()
 		}
+		user := models.FindUserByID(v.AuthorId)
 		video_list[k] = Video{
-			Author:        GetUserInfoById(Userbasic.ID, v.AuthorId),
+			Author: User{
+				ID:            int64(v.AuthorId),
+				FollowCount:   int64(user.Follow),
+				FollowerCount: int64(user.Follower),
+				Name:          user.Name,
+				IsFollow:      models.IsFollowOrNot(Userbasic.ID, user.ID),
+			},
 			CoverURL:      v.CoverURL,
 			CommentCount:  v.CommentCount,
 			FavoriteCount: v.FavoriteCount,
 			ID:            int64(v.AuthorId),
 			PlayURL:       v.PlayURL,
 			Title:         v.Title,
-			IsFavorite:    models.IsFollowOrNot(Userbasic.ID, v.AuthorId),
+			IsFavorite:    models.IsFavoriteOrNot(Userbasic.ID, v.AuthorId),
 		}
 	}
 	str := "刷新视频成功!"
