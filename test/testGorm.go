@@ -3,7 +3,6 @@ package main
 import (
 	"DouYin/models"
 	"fmt"
-	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,10 +27,9 @@ func main() {
 	//创建视频信息
 	//db.Create(&models.Video{AuthorId: 1, CommentCount: 0, FavoriteCount: 0, PlayURL: "https://v26-web.douyinvod.com/05dba22339fdd59db87141b9791504a5/63f74346/video/tos/cn/tos-cn-ve-15c001-alinc2/ow0fOAFsjrAMyI35By8DgknaAvA9tfJRhsbwCn/?a=6383&ch=5&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C3&cv=1&br=1528&bt=1528&cs=0&ds=4&ft=bvTKJbQQqUYqfJEZPo0OW_EklpPiXOSmSOVJEUTgMQCPD-I&mime_type=video_mp4&qs=0&rc=ZmUzNjUzNWloaDxpNGQ6O0BpajVxbWY6Zjk6aDMzNGkzM0AtXmEzX2M1X2ExMS9jY2EvYSMybDZpcjRnZnNgLS1kLS9zcw%3D%3D&l=20230223174311216C4B1FC2517904CF02&btag=8000", Title: "手机掉了，谁帮我捡一下!", CoverURL: "https://p3-pc-sign.douyinpic.com/tos-cn-p-0015/73264c8c1c43434aa9c7b73050141c1f_1673428090~tplv-dy-cropcenter:323:430.jpeg?biz_tag=pcweb_cover&from=3213915784&s=PackSourceEnum_PUBLISH&sc=cover&se=true&sh=323_430&x-expires=1992502800&x-signature=gOa3azeTdklbR5BoODoQcx9Ret0%3D"})
 
-	videos := make([]models.Video, 0)
-	t := time.UnixMilli(time.Now().Unix() - 1000000000).Format("2006-01-02 15:04:05.000")
-	db.Find(&videos, "created_at > ?", t)
-	fmt.Println(videos)
+	test := models.Favorite{}
+	db.Where("user_id = ? and video_id = ?", 1, 2).First(&test)
+	fmt.Println(test)
 
 	/* video := models.Video{}
 	db.Where("id = ?", 1).First(&video)

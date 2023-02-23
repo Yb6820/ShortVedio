@@ -82,10 +82,10 @@ func Getfeed(c *gin.Context) {
 			CoverURL:      v.CoverURL,
 			CommentCount:  v.CommentCount,
 			FavoriteCount: v.FavoriteCount,
-			ID:            int64(v.AuthorId),
+			ID:            int64(v.ID),
 			PlayURL:       v.PlayURL,
 			Title:         v.Title,
-			IsFavorite:    models.IsFavoriteOrNot(Userbasic.ID, v.AuthorId),
+			IsFavorite:    models.IsFavoriteOrNot(Userbasic.ID, v.ID),
 		}
 	}
 	str := "刷新视频成功!"

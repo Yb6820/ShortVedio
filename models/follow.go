@@ -25,7 +25,7 @@ func CreateFollow(follow Follow) *gorm.DB {
 func UpdateFollow(follow Follow) *gorm.DB {
 	followsql := Follow{}
 	utils.DB.Where("user_id = ? and author_id = ?", follow.UserId, follow.AuthorId).First(&followsql)
-	return utils.DB.Where("user_id = ? and author_id = ?", follow.UserId, follow.AuthorId).Updates(Favorite{IsFavorite: !followsql.IsFollow})
+	return utils.DB.Where("user_id = ? and author_id = ?", follow.UserId, follow.AuthorId).Model(follow).Update("is_follow", !followsql.IsFollow)
 }
 
 func IsInFollowTable(userid uint, authorid uint) bool {

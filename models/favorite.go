@@ -25,7 +25,7 @@ func CreateFavorite(favorite Favorite) *gorm.DB {
 func UpdateFavorite(favorite Favorite) *gorm.DB {
 	favoritesql := Favorite{}
 	utils.DB.Where("user_id = ? and video_id = ?", favorite.UserId, favorite.VideoId).First(&favoritesql)
-	return utils.DB.Where("user_id = ? and video_id = ?", favorite.UserId, favorite.VideoId).Updates(&Favorite{IsFavorite: !favoritesql.IsFavorite})
+	return utils.DB.Where("user_id = ? and video_id = ?", favorite.UserId, favorite.VideoId).Model(favorite).Update("is_favorite", !favoritesql.IsFavorite)
 }
 
 // 根据用户Id返回它点过赞的作品
