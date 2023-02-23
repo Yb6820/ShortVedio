@@ -10,12 +10,18 @@ import (
 
 type UserBasic struct {
 	gorm.Model
-	Name     string
-	Password string
-	Token    string
-	Follow   int32
-	Follower int32
-	Salt     string
+	Name            string //姓名
+	Password        string //密码
+	Token           string //用户登录token
+	Salt            string //生成随机数
+	Avatar          string // 用户头像
+	BackgroundImage string // 用户个人页顶部大图
+	Follow          int64  // 关注总数
+	Follower        int64  // 粉丝总数
+	FavoriteCount   int64  // 喜欢数
+	WorkCount       int64  // 作品数
+	TotalFavorited  string // 获赞数量
+	Signature       string // 个人简介
 }
 
 func (table *UserBasic) TableName() string {

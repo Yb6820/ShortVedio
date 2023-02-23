@@ -58,8 +58,15 @@ func GetFavoriteList(c *gin.Context) {
 	for k, v := range favoritevideo {
 		//获取视频转换为json格式
 		video := models.GetVideoById(v.VideoId)
+		user := models.FindUserByID(video.AuthorId)
 		videos[k].ID = int64(video.ID)
-		videos[k].Author = GetUserInfoById(uint(user_id), video.AuthorId)
+		videos[k].Author = User{
+			ID:            int64(user.ID),
+			FollowCount:   int64(user.Follow),
+			FollowerCount: int64(user.Follower),
+			Name:          user.Name,
+			IsFollow:      models.IsFollowOrNot(Userbasic.ID, user.ID),
+		}
 		videos[k].CommentCount = video.CommentCount
 		videos[k].PlayURL = video.PlayURL
 		videos[k].CoverURL = video.CoverURL

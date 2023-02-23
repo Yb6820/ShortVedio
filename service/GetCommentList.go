@@ -62,7 +62,7 @@ func GetCommentList(c *gin.Context) {
 		commentlist[k].ID = int64(v.ID)
 		commentlist[k].User = user
 		commentlist[k].Content = v.Content
-		commentlist[k].CreateDate = v.CreatedAt.String()
+		commentlist[k].CreateDate = v.CreatedAt.Format("01-02")
 	}
 	str := "获取所有评论成功"
 	res := CommentList{
