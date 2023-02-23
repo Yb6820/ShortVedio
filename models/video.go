@@ -41,7 +41,7 @@ func GetVideoById(videoid uint) Video {
 
 // 获取在某时间节点之前的所有视频
 func GetVideosBeforeTime(time string) []Video {
-	videos := make([]Video, 10)
+	videos := make([]Video, 0)
 	utils.DB.Find(&videos, "created_at > ?", time)
 	return videos
 }
@@ -53,7 +53,8 @@ func UpdateFavoriteCount(favorite_count int64, flag bool) *gorm.DB {
 	} else {
 		favorite_count -= 1
 	}
-	return utils.DB.Updates(Video{FavoriteCount: favorite_count})
+	video := Video{}
+	return utils.DB.Model(&video).Update("favorite_count", favorite_count)
 }
 
 // 实现评论操作计数
@@ -63,5 +64,6 @@ func UpdateCommentCount(comment_count int64, flag bool) *gorm.DB {
 	} else {
 		comment_count -= 1
 	}
-	return utils.DB.Updates(Video{CommentCount: comment_count})
+	video := Video{}
+	return utils.DB.Model(&video).Update("comment_count", comment_count)
 }

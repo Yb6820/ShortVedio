@@ -25,12 +25,12 @@ func CreateFavorite(favorite Favorite) *gorm.DB {
 func UpdateFavorite(favorite Favorite) *gorm.DB {
 	favoritesql := Favorite{}
 	utils.DB.Where("user_id = ? and video_id = ?", favorite.UserId, favorite.VideoId).First(&favoritesql)
-	return utils.DB.Where("user_id = ? and video_id = ?", favorite.UserId, favorite.VideoId).Updates(Favorite{IsFavorite: !favoritesql.IsFavorite})
+	return utils.DB.Where("user_id = ? and video_id = ?", favorite.UserId, favorite.VideoId).Updates(&Favorite{IsFavorite: !favoritesql.IsFavorite})
 }
 
 // 根据用户Id返回它点过赞的作品
 func GetFavoriteListByUserId(userid uint) []Favorite {
-	data := make([]Favorite, 10)
+	data := make([]Favorite, 0)
 	utils.DB.Find(&data, "user_id = ? and is_favorite = true", userid)
 	return data
 }
@@ -38,13 +38,13 @@ func GetFavoriteListByUserId(userid uint) []Favorite {
 // 获取用户与作者之间的点赞信息
 func IsFavoriteOrNot(userid uint, videoid uint) bool {
 	favorite := Favorite{}
-	utils.DB.Where("user_id = ? and video_id = ?", userid, videoid).First(favorite)
+	utils.DB.Where("user_id = ? and video_id = ?", userid, videoid).First(&favorite)
 	return favorite.IsFavorite
 }
 
 // 确认点赞信息是否已经入库
 func GetFavoriteById(videoid uint, userid uint) Favorite {
 	favorite := Favorite{}
-	utils.DB.Where("video_id = ? and user_id = ?", videoid, userid).First(favorite)
+	utils.DB.Where("video_id = ? and user_id = ?", videoid, userid).First(&favorite)
 	return favorite
 }

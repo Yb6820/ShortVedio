@@ -56,7 +56,7 @@ func GetCommentList(c *gin.Context) {
 	}
 	//获取视频底下的所有评论
 	comments := models.GetCommentByVideoId(uint(video_id))
-	commentlist := make([]Comment, 10)
+	commentlist := make([]Comment, len(comments))
 	for k, v := range comments {
 		user := GetUserInfoById(v.UserId, models.GetVideoById(v.VideoId).ID)
 		commentlist[k].ID = int64(v.ID)

@@ -24,7 +24,7 @@ func CreateComment(comment Comment) *gorm.DB {
 
 // 获取视频底下的所有评论
 func GetCommentByVideoId(videoid uint) []Comment {
-	data := make([]Comment, 10)
+	data := make([]Comment, 0)
 	utils.DB.Find(&data, "video_id = ?", videoid)
 	return data
 }

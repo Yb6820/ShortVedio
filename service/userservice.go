@@ -75,7 +75,7 @@ func Login(c *gin.Context) {
 	//校验密码
 	pwd := utils.MakePassword(password, user.Salt)
 	data := models.FindUserByNameAndPwd(username, pwd)
-	Userbasic = user
+	Userbasic = data
 	c.JSON(200, gin.H{
 		"status_code": 0,
 		"status_msg":  "登陆成功",

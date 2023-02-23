@@ -59,7 +59,7 @@ func Getfeed(c *gin.Context) {
 		})
 		return
 	}
-	tm := time.Unix(latest_time, 0).Format("2006-01-02 15:04:05")
+	tm := time.UnixMilli(latest_time).Format("2006-01-02 15:04:05.000")
 	videos := models.GetVideosBeforeTime(tm)
 	video_list := make([]Video, len(videos))
 	//下次传视频的最次时间nt
