@@ -1,8 +1,0 @@
-mysql:
-  dns: root:181234@tcp(121.37.246.78:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local
-redis:
-  addr: "192.168.17.95:6379"
-  password: "181234"
-  DB: 0
-  poolSize: 30
-  minIdleConn: 30
