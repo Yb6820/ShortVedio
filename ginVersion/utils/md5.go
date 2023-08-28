@@ -20,11 +20,11 @@ func MD5Encode(data string) string {
 }
 
 // 加密
-func MakePassword(plainpwd, salt string) string {
-	return Md5Encode(plainpwd + salt)
+func MakePassword(plainpwd string) string {
+	return Md5Encode(plainpwd)
 }
 
 // 解密
-func ValidPassword(plainpwd, salt string, password string) bool {
-	return Md5Encode(plainpwd+salt) == password
+func ValidPassword(plainpwd, password string) bool {
+	return Md5Encode(plainpwd) == password
 }

@@ -23,6 +23,11 @@ type UserBasic struct {
 	Signature       string // 个人简介
 }
 
+// 存放在ctx中的用户信息的模型
+type UserInfo struct {
+	Username string `json:"username"`
+}
+
 func (table *UserBasic) TableName() string {
 	return "user_basic"
 }
@@ -33,8 +38,12 @@ func FindUserByName(name string) UserBasic {
 	utils.DB.Where("name = ?", name).First(&user)
 	return user
 }
-func CreateUser(user UserBasic) *gorm.DB {
-	return utils.DB.Create(&user)
+func CreateUser(user UserBasic) (err error) {
+	err = utils.DB.Create(&user).Error
+	if err == gorm.ErrRecordNotFound {
+		err = nil
+	}
+	return
 }
 
 func FindUserByID(Id uint) UserBasic {

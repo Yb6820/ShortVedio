@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"DouYin/models"
 	"DouYin/utils/errmsg"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -64,8 +65,8 @@ func JwtToken() gin.HandlerFunc {
 		if tokenHandler == "" {
 			code = errmsg.TOKEN_NOT_EXISTS
 			c.JSON(http.StatusOK, gin.H{
-				"code":    code,
-				"message": errmsg.GetErrMsg(code),
+				"status_code": code,
+				"status_msg":  errmsg.GetErrMsg(code),
 			})
 			c.Abort()
 		}
@@ -74,10 +75,32 @@ func JwtToken() gin.HandlerFunc {
 		if len(checkToken) != 2 || checkToken[0] != "Bearer" {
 			code = errmsg.TOKEN_TYPE_ERROR
 			c.JSON(http.StatusOK, gin.H{
-				"code":    code,
-				"message": errmsg.GetErrMsg(code),
+				"status_code": code,
+				"status_msg":  errmsg.GetErrMsg(code),
 			})
 			c.Abort()
 		}
+		key, err := ParseToken(checkToken[1])
+		if err != nil {
+			code = errmsg.PARSE_TOKRN_ERROR
+			c.JSON(http.StatusOK, gin.H{
+				"status_code": code,
+				"status_msg":  errmsg.GetErrMsg(code),
+			})
+			c.Abort()
+		}
+		if time.Now().Unix() > key.ExpiresAt {
+			code = errmsg.TOKEN_RUNTIME_ERROR
+			c.JSON(http.StatusOK, gin.H{
+				"status_code": code,
+				"status_msg":  errmsg.GetErrMsg(code),
+			})
+			c.Abort()
+		}
+		//获取用户信息并将有效的用户信息保存到ctx中
+		c.Set("userInfo", models.UserInfo{
+			Username: key.Username,
+		})
+		c.Next()
 	}
 }
