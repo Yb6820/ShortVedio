@@ -39,6 +39,7 @@ func Router() *gin.Engine {
 		//获取聊天记录
 		auth.GET("/douyin/message/chat/", service.GetChatHistory)
 	}
+
 	normal := r.Group("api/v1")
 	{
 		//视频流接口

@@ -4,15 +4,15 @@ import (
 	"DouYin/models"
 	"DouYin/utils/errmsg"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/spf13/viper"
 	"net/http"
-	"strings"
 	"time"
 )
 
-var jwtKey = viper.GetString("jwt.key")
+var jwtKey = []byte(viper.GetString("jwt.key"))
 
 type MyClaims struct {
 	Username string `json:"username"`
@@ -35,6 +35,7 @@ func SetToken(username string) (token string, err error) {
 	}
 	reqClaim := jwt.NewWithClaims(jwt.SigningMethodHS256, setClaims)
 	token, err = reqClaim.SignedString(jwtKey)
+	fmt.Println(token, err, jwtKey)
 	if err != nil {
 		return "", jwt.ErrSignatureInvalid
 	}
@@ -43,7 +44,7 @@ func SetToken(username string) (token string, err error) {
 
 // 解析token
 func ParseToken(token string) (claims *MyClaims, err error) {
-	setToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+	setToken, err := jwt.ParseWithClaims(token, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 	if err != nil {
@@ -60,7 +61,11 @@ func ParseToken(token string) (claims *MyClaims, err error) {
 // token中间件
 func JwtToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenHandler := c.Request.Header.Get("Authorization")
+		var tokenHandler string
+		tokenHandler = c.Query("token")
+		if tokenHandler == "" {
+			tokenHandler = c.Request.FormValue("token")
+		}
 		code := errmsg.SUCCESS
 		if tokenHandler == "" {
 			code = errmsg.TOKEN_NOT_EXISTS
@@ -70,17 +75,7 @@ func JwtToken() gin.HandlerFunc {
 			})
 			c.Abort()
 		}
-		//限制拆分的个数
-		checkToken := strings.SplitN(tokenHandler, " ", 2)
-		if len(checkToken) != 2 || checkToken[0] != "Bearer" {
-			code = errmsg.TOKEN_TYPE_ERROR
-			c.JSON(http.StatusOK, gin.H{
-				"status_code": code,
-				"status_msg":  errmsg.GetErrMsg(code),
-			})
-			c.Abort()
-		}
-		key, err := ParseToken(checkToken[1])
+		key, err := ParseToken(tokenHandler)
 		if err != nil {
 			code = errmsg.PARSE_TOKRN_ERROR
 			c.JSON(http.StatusOK, gin.H{

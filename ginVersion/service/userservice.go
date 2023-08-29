@@ -85,6 +85,7 @@ func Login(c *gin.Context) {
 			"user_id":     0,
 			"token":       "",
 		})
+		return
 	}
 	c.JSON(200, gin.H{
 		"status_code": 0,

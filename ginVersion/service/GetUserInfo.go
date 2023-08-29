@@ -43,11 +43,11 @@ type User struct {
 
 // 根据用户ID返回json格式的User数据
 func GetUserInfoById(userid uint, authorid uint) User {
-	usersql := models.FindUserByID(uint(userid))
+	usersql := models.FindUserByID(userid)
 	user := User{
 		ID:            int64(usersql.ID),
-		FollowCount:   int64(usersql.Follow),
-		FollowerCount: int64(usersql.Follower),
+		FollowCount:   usersql.Follow,
+		FollowerCount: usersql.Follower,
 		IsFollow:      models.IsFollowOrNot(userid, authorid), //待后续修改
 		Name:          usersql.Name,
 	}
@@ -56,19 +56,7 @@ func GetUserInfoById(userid uint, authorid uint) User {
 
 func GetUserInfo(c *gin.Context) {
 	user_id, _ := strconv.Atoi(c.Query("user_id"))
-	token := c.Query("token")
-	usersql := models.FindUserByID(uint(user_id))
 	user := GetUserInfoById(uint(user_id), uint(user_id))
-	if token != usersql.Token {
-		str := "登录信息失效！"
-		userinfo := UserInfo{
-			StatusCode: -1,
-			StatusMsg:  &str,
-			User:       &user,
-		}
-		c.JSON(200, userinfo)
-		return
-	}
 	str := "获取用户信息成功"
 	userinfo := UserInfo{
 		StatusCode: 0,
